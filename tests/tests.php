@@ -77,6 +77,10 @@ class PHPSDKTestCase extends PHPUnit_Framework_TestCase {
     return $sig.'.'.$b64;
   }
 
+  private static function kSignedRequestInvalidWithoutDotSeparator() {
+    return str_replace('.', '', self::kValidSignedRequest());
+  }
+
   public function testConstructor() {
     $facebook = new TransientFacebook(array(
       'appId'  => self::APP_ID,
@@ -869,6 +873,16 @@ class PHPSDKTestCase extends PHPUnit_Framework_TestCase {
     ));
     $payload = $fb->publicParseSignedRequest(
       self::kSignedRequestWithWrongAlgo());
+    $this->assertNull($payload, 'Expected nothing back.');
+  }
+
+  public function testSignedRequestInvalid() {
+    $fb = new FBPublic(array(
+      'appId'  => self::APP_ID,
+      'secret' => self::SECRET
+    ));
+    $payload = $fb->publicParseSignedRequest(
+      self::kSignedRequestInvalidWithoutDotSeparator());
     $this->assertNull($payload, 'Expected nothing back.');
   }
 
